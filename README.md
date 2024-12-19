@@ -3,6 +3,8 @@
 2) Перейти по ссылке http://localhost:5000/
 
 3) Видим функционал сайта, с возможностью сортировки бетоносмесителей по их производительности
-![для ридми](https://github.com/user-attachments/assets/4f3cb20a-7830-4623-a227-24d3d000fa8f)
+![Снимок экрана (155)](https://github.com/user-attachments/assets/4ea86675-ca6c-4772-9baf-04c798708195)
 
 4) Имеется возможность оставления комментариев.
+![Снимок экрана (158)](https://github.com/user-attachments/assets/f0fa5bf0-4d3c-4070-85d4-73cc72f85bd2)
+![Снимок экрана (159)](https://github.com/user-attachments/assets/a091fa47-afc5-4cfe-b1b9-db8305d3a9e3)
