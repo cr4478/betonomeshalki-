@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бетоносмесители</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/main.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Бетоносмесители</h1>
+    </header>
+
+    <main>
+        <!-- Форма для выбора сортировки -->
+        <form id="sort-form" class="sort-form">
+            <label for="sort_by">Сортировать по:</label>
+            <select name="sort_by" id="sort_by">
+                <option value="name">По умолчанию</option>
+                <option value="power">По производительности</option>
+            </select>
+            <button type="submit" class="btn-sort">Сортировать</button>
+        </form>
+
+        <ul id="betonomehalka-list" class="product-list">
+            {% for item in betonomehalkers %}
+            <li class="product-card" id="betonomehalka-{{ item.id }}">
+                <h2 class="product-name">{{ item.name }}</h2>
+                <p class="product-specs">{{ item.specs }}</p>
+
+                <!-- Conditionally show the 'power' value based on sorting option -->
+                <p class="product-power" style="display: none;">Производительность: <strong>{{ item.power }}</strong> л/ч (литров бетонной смеси в час)</p>
+
+                <!-- Форма для добавления комментариев -->
+                <form class="comment-form" data-id="{{ item.id }}">
+                    <input type="text" name="text" placeholder="Оставьте комментарий" class="comment-input">
+                    <button type="submit" class="btn-submit">Отправить</button>
+                </form>
+
+                <ul class="comment-list" id="comments-{{ item.id }}">
+                    {% for comment in item.comments %}
+                    <li class="comment-item">{{ comment.text }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endfor %}
+        </ul>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Бетоносмесители. Все права защищены.</p>
+    </footer>
+
+    <script>
+        // JavaScript to show 'power' only when sorting by 'power'
+        document.getElementById('sort-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission to handle via AJAX
+
+            const sortBy = document.getElementById('sort_by').value;
+            fetch(`/sort?sort_by=${sortBy}`)
+                .then(response => response.json())
+                .then(data => {
+                    const productList = document.getElementById('betonomehalka-list');
+                    productList.innerHTML = '';
+
+                    data.betonomehalkers.forEach(item => {
+                        const productCard = document.createElement('li');
+                        productCard.classList.add('product-card');
+                        productCard.innerHTML = `
+                            <h2 class="product-name">${item.name}</h2>
+                            <p class="product-specs">${item.specs}</p>
+                            <p class="product-price">Цена: <strong>${item.price}</strong> руб</p>
+                            <p class="product-power" style="display: ${sortBy === 'power' ? 'block' : 'none'};">Производительность: <strong>${item.power}</strong> л/ч (литров бетонной смеси в час)</p>
+                            <form class="comment-form" data-id="${item.id}">
+                                <input type="text" name="text" placeholder="Оставьте комментарий" class="comment-input">
+                                <button type="submit" class="btn-submit">Отправить</button>
+                            </form>
+                            <ul class="comment-list" id="comments-${item.id}">
+                                ${item.comments.map(comment => `<li class="comment-item">${comment.text}</li>`).join('')}
+                            </ul>
+                        `;
+                        productList.appendChild(productCard);
+                    });
+                });
+        });
+    </script>
+</body>
+
+<style>
+
+        /* Основные стили */
+body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* Заголовок */
+header {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+/* Основной блок */
+main {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* Форма сортировки */
+.sort-form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.sort-form label {
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.sort-form select {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.btn-sort {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.btn-sort:hover {
+    background-color: #45a049;
+}
+
+/* Список продуктов */
+.product-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.product-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.product-name {
+    font-size: 1.5rem;
+    margin: 0 0 10px;
+    color: #333;
+}
+
+.product-specs {
+    font-size: 1rem;
+    margin: 10px 0;
+    color: #666;
+}
+
+.product-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #000;
+}
+
+/* Форма комментариев */
+.comment-form {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.comment-input {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-right: 10px;
+}
+
+.btn-submit {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.btn-submit:hover {
+    background-color: #45a049;
+}
+
+/* Список комментариев */
+.comment-list {
+    list-style: none;
+    padding: 10px 0 0;
+    margin: 0;
+    border-top: 1px solid #ddd;
+}
+
+.comment-item {
+    font-size: 0.9rem;
+    color: #444;
+    padding: 5px 0;
+}
+
+/* Подвал */
+footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #888;
+}
+</style>
+</html>

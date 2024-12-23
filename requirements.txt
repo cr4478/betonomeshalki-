@@ -1,0 +1,7 @@
+Flask
+Flask-SQLAlchemy
+psycopg2
+Flask-Migrate
+beautifulsoup4
+werkzeug
+sqlalchemy
